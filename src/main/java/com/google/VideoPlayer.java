@@ -1,8 +1,6 @@
 package com.google;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class VideoPlayer {
@@ -16,6 +14,7 @@ public class VideoPlayer {
   Video nowPlaying = null; // Video currently playing.
   boolean paused = false; // Paused status.
 
+  private TreeMap<String, VideoPlaylist> videoPlaylists = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
   public void numberOfVideos() {
     System.out.printf("%s videos in the library%n", videoLibrary.getVideos().size());
@@ -132,7 +131,12 @@ public class VideoPlayer {
   }
 
   public void createPlaylist(String playlistName) {
-    System.out.println("createPlaylist needs implementation");
+    if (videoPlaylists.get(playlistName) != null) {
+      System.out.println("Cannot create playlist: " + "A playlist with the same name already exists");
+      return;
+    }
+    videoPlaylists.put(playlistName, new VideoPlaylist(playlistName));
+    System.out.println("Successfully created new playlist: " + videoPlaylists.get(playlistName).getName());
   }
 
   public void addVideoToPlaylist(String playlistName, String videoId) {
