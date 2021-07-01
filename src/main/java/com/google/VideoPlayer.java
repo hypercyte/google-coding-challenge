@@ -31,13 +31,15 @@ public class VideoPlayer {
     videos.forEach(video -> System.out.println(video.toString()));
   }
 
-  public void playVideo(String videoId) {
-    List<Video> videos = videoLibrary.getVideos(); // List of videos
-
-    Video foundVideo = videos.stream()
-            .filter(video -> videoId.equals(video.getVideoId()))
+  private Video findVideo(String id, List<Video> videos) {
+    return videos.stream()
+            .filter(video -> id.equals(video.getVideoId()))
             .findAny()
             .orElse(null);
+  }
+
+  public void playVideo(String videoId) {
+    Video foundVideo = findVideo(videoId, videoLibrary.getVideos());
 
     if (foundVideo == null) {
       // If no video is found...
@@ -140,7 +142,22 @@ public class VideoPlayer {
   }
 
   public void addVideoToPlaylist(String playlistName, String videoId) {
-    System.out.println("addVideoToPlaylist needs implementation");
+    VideoPlaylist playlist = videoPlaylists.get(playlistName);
+    if (playlist == null) {
+      System.out.println("Cannot add video to " + playlistName + ": " + "Playlist does not exist");
+      return;
+    }
+    if (findVideo(videoId, videoLibrary.getVideos()) == null) {
+      System.out.println("Cannot add video to " + playlistName + ": " + "Video does not exist");
+      return;
+    }
+    if (findVideo(videoId, playlist.getVideos()) != null) {
+      System.out.println("Cannot add video to " + playlistName + ": " + "Video already added");
+      return;
+    }
+    Video foundVideo = findVideo(videoId, videoLibrary.getVideos());
+    playlist.getVideos().add(foundVideo);
+    System.out.println("Added video to " + playlistName + ": " + foundVideo.getTitle());
   }
 
   public void showAllPlaylists() {
